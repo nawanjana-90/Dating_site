@@ -1,621 +1,652 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>A Special Romantic Date Planner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Our Special Date ❤️</title>
+<!-- GSAP Animation Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  }
+* {margin: 0;padding: 0;box-sizing: border-box;font-family: "Segoe UI", sans-serif;}
+body {min-height: 100vh;width: 100vw;background: linear-gradient(160deg, #2b0f1a, #170a12);display: flex;justify-content: center;align-items: center;overflow: hidden;position: relative;}
 
-  body {
-    min-height: 100vh;
-    width: 100vw;
-    background: linear-gradient(160deg, #2b0f1a, #170a12);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow-x: hidden;
-    overflow-y: auto;
-    position: relative;
-    padding: 20px 10px;
-  }
+/* FLYING HEARTS */
+.hearts-layer {position: fixed;inset: 0;pointer-events: none;overflow: hidden;z-index: 1;}
+.flying-heart {position: absolute;bottom: -50px;opacity: 0;font-size: 22px;}
 
-  .hearts-layer {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 1;
-  }
+/* COMMON CARD STYLE */
+.screen {
+  width: 360px;
+  max-width: 90vw;
+  background: rgba(35, 15, 24, 0.92);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 92, 138, 0.25);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  z-index: 5;
+  display: none;
+  opacity: 0;
+  transform: translateY(20px) scale(0.96);
+  pointer-events: none;
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.screen.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+h2 {color: #ffdce6;font-size: 21px;margin-bottom: 7px;}
+.sub {color: #d68ba0;font-size: 13px;margin-bottom: 20px;line-height: 1.5;}
 
-  .flying-heart {
-    position: absolute;
-    bottom: -40px;
-    font-size: 22px;
-    opacity: 0;
-    color: #ff5c8a;
-    pointer-events: none;
-  }
+/* START SCREEN */
+#startScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+#startScreen.active {display: flex;}
+.heart-wrap {width: 140px;height: 140px;cursor: pointer;}
+.heart-wrap svg {width: 100%;height: 100%;}
+.heart-shape {fill: #ff2d55;filter: drop-shadow(0 0 15px rgba(255, 45, 85, 0.7));}
+.hint {color: #d68ba0;font-size: 14px;margin-top: 15px;}
 
-  .card-container {
-    width: 100%;
-    max-width: 360px;
-    background: rgba(35, 15, 24, 0.9);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 92, 138, 0.25);
-    border-radius: 20px;
-    padding: 24px;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.6);
-    z-index: 10;
-    margin: auto;
-    display: none;
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
-    transition: opacity 0.4s ease, transform 0.4s ease;
-  }
+/* LOGIN */
+.login-form {
+  width: 100%;
+  margin-top: 22px;
+  background: rgba(35, 15, 24, 0.9);
+  border: 1px solid rgba(255, 92, 138, 0.25);
+  border-radius: 18px;
+  padding: 25px;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: 0.4s;
+}
+.login-form.active {opacity: 1;transform: translateY(0);pointer-events: auto;}
+.login-form input {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 13px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 92, 138, 0.3);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffe4ec;
+  outline: none;
+}
+.login-form input:focus {border-color: #ff5c8a;}
 
-  .card-container.active {
-    display: block;
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
+button {font-family: inherit;}
+.main-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  background: #ff2d55;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.25s;
+}
+.main-btn:hover {background: #e01e46;transform: scale(1.02);}
 
-  .heart-wrap {
-    width: 120px;
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    z-index: 10;
-    position: relative;
-  }
+/* DATE SCREEN */
+.couple-stage {
+  height: 90px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  margin-bottom: 10px;
+}
+.couple-stage svg {height: 80px;}
 
-  .heart-wrap svg {
-    width: 100%;
-    height: 100%;
-  }
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.cal-header button {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 92, 138, 0.3);
+  background: transparent;
+  color: #ffdce6;
+  cursor: pointer;
+  font-size: 17px;
+}
+#monthLabel {color: #ffdce6;font-size: 14px;font-weight: 600;}
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  margin-bottom: 15px;
+}
+.cal-dow {color: #a8677c;font-size: 10px;text-align: center;}
+.cal-day {
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: #ffe4ec;
+  font-size: 12px;
+  cursor: pointer;
+  position: relative;
+}
+.cal-day:hover:not(.empty) {background: rgba(255, 92, 138, 0.2);}
+.cal-day.empty {cursor: default;}
+.cal-day.selected {background: #ff2d55;color: white;font-weight: bold;}
+.picked-label {min-height: 20px;color: #ffb3c6;font-size: 12px;margin-bottom: 12px;}
 
-  .heart-shape {
-    fill: #ff2d55;
-    filter: drop-shadow(0 0 12px rgba(255, 45, 85, 0.6));
-  }
+/* PLACE SCREEN */
+#placeScreen {max-height: 85vh;overflow-y: auto;}
+.places-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  position: relative;
+  margin-top: 15px;
+}
+.place-btn {
+  padding: 13px 8px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 92, 138, 0.3);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffe4ec;
+  font-size: 14px;
+  cursor: pointer;
+  position: relative;
+  transition: 0.2s;
+}
+.place-btn:hover {background: rgba(255, 92, 138, 0.18);}
+.kandy-btn {
+  grid-column: span 2;
+  background: #ff2d55;
+  border: none;
+  font-size: 18px;
+  font-weight: bold;
+}
 
-  .hint {
-    color: #d68ba0;
-    font-size: 14px;
-    margin-top: 14px;
-    text-align: center;
-    z-index: 10;
-  }
+/* COUPLE ANIMATION */
+.final-couple {
+  height: 150px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.final-couple svg {height: 145px;}
+.couple-message {color: #ffb3c6;font-size: 14px;min-height: 22px;margin-bottom: 10px;}
 
-  h2 {
-    color: #ffdce6;
-    font-size: 20px;
-    font-weight: 600;
-    margin-bottom: 4px;
-    text-align: center;
-  }
+/* TIME SCREEN */
+.big-heart {font-size: 65px;margin-bottom: 12px;}
+.time-options {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+.time-btn {
+  padding: 13px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 92, 138, 0.3);
+  background: rgba(255, 255, 255, 0.07);
+  color: #ffe4ec;
+  cursor: pointer;
+  font-size: 14px;
+  transition: 0.25s;
+}
+.time-btn:hover {transform: scale(1.05);background: rgba(255, 92, 138, 0.2);}
+.time-btn.selected {background: #ff2d55;border-color: #ff2d55;}
+.selected-time {
+  min-height: 22px;
+  margin-top: 18px;
+  margin-bottom: 12px;
+  color: #ffb3c6;
+  font-size: 13px;
+}
 
-  p.sub {
-    color: #d68ba0;
-    font-size: 13px;
-    text-align: center;
-    margin-bottom: 16px;
-  }
+/* FINAL CONFIRMATION */
+.confirmation {color: #ffdce6;font-size: 18px;line-height: 1.8;}
+.confirmation small {color: #d68ba0;font-size: 13px;}
 
-  input, select {
-    width: 100%;
-    background: rgba(255,255,255,0.06);
-    border: 1px solid rgba(255,92,138,0.3);
-    color: #ffe4ec;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    font-size: 14px;
-    outline: none;
-  }
-
-  select option {
-    background: #2b0f1a;
-    color: #ffe4ec;
-  }
-
-  button.btn {
-    width: 100%;
-    background: #ff2d55;
-    color: white;
-    border: none;
-    padding: 12px;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 6px;
-  }
-
-  button.btn:hover {
-    background: #e01e46;
-  }
-
-  .cal-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-  }
-
-  .cal-header button {
-    background: transparent;
-    border: 1px solid rgba(255,92,138,0.3);
-    color: #ffdce6;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    cursor: pointer;
-  }
-
-  .cal-grid {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    margin-bottom: 12px;
-  }
-
-  .cal-dow {
-    color: #a8677c;
-    font-size: 11px;
-    text-align: center;
-  }
-
-  .cal-day {
-    aspect-ratio: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    color: #ffe4ec;
-    font-size: 12px;
-    cursor: pointer;
-  }
-
-  .cal-day:hover:not(.empty) {
-    background: rgba(255,92,138,0.2);
-  }
-
-  .cal-day.selected {
-    background: #ff2d55;
-    color: white;
-    font-weight: bold;
-  }
-
-  .town-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 14px;
-    position: relative;
-    min-height: 180px;
-  }
-
-  .town-card {
-    background: rgba(255, 255, 255, 0.08);
-    border: 1.5px solid rgba(255, 92, 138, 0.3);
-    padding: 14px 8px;
-    border-radius: 12px;
-    text-align: center;
-    color: #ffe4ec;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    user-select: none;
-    transition: background 0.2s, border-color 0.2s, transform 0.2s ease-out;
-  }
-
-  .town-card:hover {
-    background: rgba(255, 92, 138, 0.2);
-    border-color: #ff5c8a;
-  }
-
-  .town-card.selected {
-    border-color: #ff2d55;
-    background: #ff2d55;
-    color: #ffffff;
-    font-weight: 700;
-    box-shadow: 0 0 12px rgba(255, 45, 85, 0.6);
-  }
-
-  /* Flying Animation for non-Kandy towns */
-  .town-card.flyaway {
-    position: absolute;
-    z-index: 100;
-  }
-
-  .gift-box-wrap {
-    text-align: center;
-    margin: 16px 0;
-    display: none;
-  }
-
-  .gift-icon {
-    font-size: 45px;
-    cursor: pointer;
-    display: inline-block;
-  }
-
-  .gift-message {
-    color: #ff8a5c;
-    font-size: 13px;
-    margin-top: 6px;
-    font-weight: 600;
-  }
-
-  .summary-box {
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 12px;
-    padding: 14px;
-    margin-bottom: 14px;
-    border: 1px dashed rgba(255, 92, 138, 0.4);
-  }
-
-  .summary-item {
-    color: #ffdce6;
-    font-size: 13px;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .summary-item span {
-    color: #ff5c8a;
-    font-weight: 600;
-  }
+@media (max-width: 450px) {
+  .screen {width: 90vw;padding: 23px 18px;}
+  .place-btn {font-size: 13px;}
+}
 </style>
 </head>
 <body>
 
-  <div class="hearts-layer" id="heartsLayer"></div>
+<div class="hearts-layer" id="heartsLayer"></div>
 
-  <!-- Step 0 -->
-  <div id="step0" style="display: flex; flex-direction: column; align-items: center;">
-    <div class="heart-wrap" id="heartBtn">
-      <svg viewBox="0 0 100 90">
-        <path class="heart-shape" id="heartShape" d="M50 85 C20 60 2 40 2 22 C2 6 15 -2 28 4 C38 8 46 18 50 26 C54 18 62 8 72 4 C85 -2 98 6 98 22 C98 40 80 60 50 85 Z"/>
-      </svg>
-    </div>
-    <p class="hint">Tap the heart to start</p>
+<!-- START SCREEN -->
+<div class="screen active" id="startScreen">
+  <div class="heart-wrap" id="heartBtn">
+    <svg viewBox="0 0 100 90" xmlns="http://www.w3.org/2000/svg">
+      <path class="heart-shape" id="heartShape" d="M50 85C20 60 2 40 2 22C2 6 15 -2 28 4C38 8 46 18 50 26C54 18 62 8 72 4C85 -2 98 6 98 22C98 40 80 60 50 85 Z"/>
+    </svg>
   </div>
 
-  <!-- Step 1 -->
-  <div class="card-container" id="step1">
-    <h2>Welcome Back</h2>
-    <p class="sub">Sign in to plan your special day</p>
-    <form id="loginForm">
-      <input type="text" placeholder="Username" required />
-      <input type="password" placeholder="Passcode" required />
-      <button type="submit" class="btn">Sign In</button>
-    </form>
+  <p class="hint" id="hintText">Tap the heart to sign in ❤️</p>
+
+  <form class="login-form" id="loginForm">
+    <h2>Find Your Match ❤️</h2>
+    <p class="sub">Sign in to continue</p>
+    <input type="text" id="usernameInput" placeholder="Username" required>
+    <input type="password" placeholder="Password" required>
+    <button class="main-btn" type="submit">Sign In ❤️</button>
+  </form>
+</div>
+
+<!-- DATE SCREEN -->
+<div class="screen" id="dateScreen">
+  <div class="couple-stage">
+    <svg viewBox="0 0 200 100" xmlns="http://www.w3.org/2000/svg">
+      <circle id="figA" cx="70" cy="55" r="14" fill="#ffb3c6"/>
+      <rect id="bodyA" x="60" y="66" width="20" height="30" rx="8" fill="#ff5c8a"/>
+      <circle id="figB" cx="130" cy="55" r="14" fill="#ffd9a0"/>
+      <rect id="bodyB" x="120" y="66" width="20" height="30" rx="8" fill="#ff8a5c"/>
+      <text id="popHeart" x="100" y="40" text-anchor="middle" font-size="0" fill="#ff2d55">❤</text>
+    </svg>
   </div>
 
-  <!-- Step 2 -->
-  <div class="card-container" id="step2">
-    <h2>Pick a Date</h2>
-    <p class="sub">Choose the perfect day</p>
-    <div class="cal-header">
-      <button id="prevMonth">&#8249;</button>
-      <span id="monthLabel" style="color: #ffdce6; font-size: 14px;"></span>
-      <button id="nextMonth">&#8250;</button>
-    </div>
-    <div class="cal-grid" id="calGrid"></div>
-    <p id="pickedDateLabel" style="text-align: center; color: #ffb3c6; font-size: 12px; margin-bottom: 10px; min-height: 16px;"></p>
-    <button class="btn" id="toStep3Btn">Next: Choose Destination</button>
+  <h2>Pick a Date 📅</h2>
+  <p class="sub">Every day is a good day ❤️</p>
+
+  <div class="cal-header">
+    <button id="prevMonth" type="button">‹</button>
+    <span id="monthLabel">Month</span>
+    <button id="nextMonth" type="button">›</button>
   </div>
 
-  <!-- Step 3: CUNNING PLAN DESTINATION SELECTION -->
-  <div class="card-container" id="step3">
-    <h2>Select Destination</h2>
-    <p class="sub">Tap on any town to choose</p>
-    <div class="town-grid" id="townGrid">
-      <div class="town-card" data-town="Kandy">Kandy 🌸</div>
-      <div class="town-card" data-town="Colombo">Colombo 🌊</div>
-      <div class="town-card" data-town="Galle">Galle 🏰</div>
-      <div class="town-card" data-town="Nuwara Eliya">Nuwara Eliya 🫖</div>
-      <div class="town-card" data-town="Sigiriya">Sigiriya 🌿</div>
-      <div class="town-card" data-town="Ella">Ella ⛰️</div>
-    </div>
-    <button class="btn" id="toStep4Btn">Next: Time & Surprise</button>
+  <div class="cal-grid" id="calGrid"></div>
+  <p class="picked-label" id="pickedLabel">Select a date ❤️</p>
+  <button class="main-btn" id="confirmDateBtn" type="button">Lock In This Date ❤️</button>
+</div>
+
+<!-- PLACE SCREEN -->
+<div class="screen" id="placeScreen">
+  <div class="final-couple">
+    <svg viewBox="0 0 240 150" xmlns="http://www.w3.org/2000/svg">
+      <circle id="finalHeadA" cx="75" cy="55" r="20" fill="#ffb3c6"/>
+      <rect id="finalBodyA" x="58" y="75" width="35" height="55" rx="14" fill="#ff5c8a"/>
+      <circle id="finalHeadB" cx="165" cy="55" r="20" fill="#ffd9a0"/>
+      <rect id="finalBodyB" x="148" y="75" width="35" height="55" rx="14" fill="#ff8a5c"/>
+      <line id="armA" x1="88" y1="90" x2="115" y2="95" stroke="#ffb3c6" stroke-width="9" stroke-linecap="round"/>
+      <line id="armB" x1="152" y1="90" x2="125" y2="95" stroke="#ffd9a0" stroke-width="9" stroke-linecap="round"/>
+      <text id="finalHeart" x="120" y="35" text-anchor="middle" font-size="0" fill="#ff2d55">❤</text>
+    </svg>
   </div>
 
-  <!-- Step 4 -->
-  <div class="card-container" id="step4">
-    <h2>Time & Refreshments</h2>
-    <p class="sub">Set the time and pick a drink</p>
-    
-    <label style="color:#d68ba0; font-size:12px;">Select Time:</label>
-    <input type="time" id="timeInput" required />
+  <h2>Where Should We Go? 💕</h2>
+  <p class="sub">Only one place can be selected 😌❤️</p>
+  <p class="couple-message" id="coupleMessage">Try choosing a place...</p>
 
-    <div class="gift-box-wrap" id="giftWrap">
-      <div class="gift-icon" id="giftIcon">🎁</div>
-      <p class="gift-message" id="giftMsg">Tap the gift to open your surprise!</p>
-    </div>
+  <div class="places-container" id="placesContainer">
+    <button class="place-btn kandy-btn" id="kandyBtn" type="button">❤️ Kandy ❤️</button>
+    <button class="place-btn escape-btn" type="button">Colombo</button>
+    <button class="place-btn escape-btn" type="button">Galle</button>
+    <button class="place-btn escape-btn" type="button">Ella</button>
+    <button class="place-btn escape-btn" type="button">Nuwara Eliya</button>
+    <button class="place-btn escape-btn" type="button">Anuradhapura</button>
+    <button class="place-btn escape-btn" type="button">Sigiriya</button>
+    <button class="place-btn escape-btn" type="button">Jaffna</button>
+    <button class="place-btn escape-btn" type="button">Matara</button>
+    <button class="place-btn escape-btn" type="button">Negombo</button>
+    <button class="place-btn escape-btn" type="button">Trincomalee</button>
+    <button class="place-btn escape-btn" type="button">Kurunegala</button>
+    <button class="place-btn escape-btn" type="button">Ratnapura</button>
+    <button class="place-btn escape-btn" type="button">Batticaloa</button>
+    <button class="place-btn escape-btn" type="button">Badulla</button>
+  </div>
+</div>
 
-    <label style="color:#d68ba0; font-size:12px;">Favorite Beverage:</label>
-    <select id="beverageSelect">
-      <option value="">-- Choose Beverage --</option>
-      <option value="Cappuccino Coffee ☕">Cappuccino Coffee ☕</option>
-      <option value="Fresh Berry Smoothie 🍓">Fresh Berry Smoothie 🍓</option>
-      <option value="Red Wine 🍷">Red Wine 🍷</option>
-      <option value="Hot Chocolate 🍫">Hot Chocolate 🍫</option>
-    </select>
+<!-- TIME SCREEN -->
+<div class="screen" id="timeScreen">
+  <div class="big-heart" id="timeHeart">❤️</div>
+  <h2>At What Time? ⏰</h2>
+  <p class="sub">Choose the perfect time for our date ❤️</p>
 
-    <button class="btn" id="toStep5Btn">Next: Hotel Selection</button>
+  <div class="time-options">
+    <button class="time-btn" type="button">10:00 AM</button>
+    <button class="time-btn" type="button">12:00 PM</button>
+    <button class="time-btn" type="button">2:00 PM</button>
+    <button class="time-btn" type="button">4:00 PM</button>
+    <button class="time-btn" type="button">6:00 PM</button>
+    <button class="time-btn" type="button">8:00 PM</button>
   </div>
 
-  <!-- Step 5 -->
-  <div class="card-container" id="step5">
-    <h2>Choose Hotel</h2>
-    <p class="sub" id="hotelSub">Available hotels</p>
-    
-    <select id="hotelSelect"></select>
+  <p class="selected-time" id="selectedTimeText">Select a time ❤️</p>
+  <button class="main-btn" id="submitTimeBtn" type="button">Confirm Our Date ❤️</button>
+</div>
 
-    <button class="btn" id="toFinalBtn">Lock in Date</button>
-  </div>
-
-  <!-- Step 6 -->
-  <div class="card-container" id="step6">
-    <h2>It's a Date! ❤️</h2>
-    <p class="sub">Your plan is locked in successfully</p>
-    
-    <div class="summary-box">
-      <div class="summary-item">Date: <span id="sumDate">-</span></div>
-      <div class="summary-item">Location: <span id="sumPlace">-</span></div>
-      <div class="summary-item">Time: <span id="sumTime">-</span></div>
-      <div class="summary-item">Beverage: <span id="sumBeverage">-</span></div>
-      <div class="summary-item">Hotel: <span id="sumHotel">-</span></div>
-    </div>
-
-    <button class="btn" onclick="location.reload()">Plan Another Date</button>
-  </div>
+<!-- CONFIRMATION SCREEN -->
+<div class="screen" id="confirmationScreen">
+  <div class="big-heart">❤️</div>
+  <div class="confirmation" id="confirmationText"></div>
+</div>
 
 <script>
-  let state = {
-    date: null,
-    place: '',
-    time: '',
-    beverage: '',
-    hotel: ''
-  };
+const startScreen = document.getElementById('startScreen');
+const dateScreen = document.getElementById('dateScreen');
+const placeScreen = document.getElementById('placeScreen');
+const timeScreen = document.getElementById('timeScreen');
+const confirmationScreen = document.getElementById('confirmationScreen');
 
-  const hotelData = {
-    'Kandy': ['Earl\'s Regency', 'Mahaweli Reach', 'Grand Kandyan'],
-    'Colombo': ['Shangri-La Colombo', 'Cinnamon Grand', 'The Kingsbury'],
-    'Galle': ['Amangalla', 'Jetwing Lighthouse', 'Radisson Blu Galle'],
-    'Nuwara Eliya': ['Grand Hotel', 'Araliya Green City', 'Heritance Tea Factory'],
-    'Sigiriya': ['Heritance Kandalama', 'Aliya Resort', 'Water Garden'],
-    'Ella': ['98 Acres Resort', 'Chill Cafe & Stay', 'Ella Heights']
-  };
+const heartBtn = document.getElementById('heartBtn');
+const heartShape = document.getElementById('heartShape');
+const hintText = document.getElementById('hintText');
+const loginForm = document.getElementById('loginForm');
+const heartsLayer = document.getElementById('heartsLayer');
+const usernameInput = document.getElementById('usernameInput');
 
-  // Background Flying Hearts
-  const heartsLayer = document.getElementById('heartsLayer');
-  function spawnHeart() {
-    const heart = document.createElement('div');
-    heart.className = 'flying-heart';
-    heart.textContent = Math.random() > 0.5 ? '❤️' : '💖';
-    heart.style.left = Math.random() * window.innerWidth + 'px';
-    heart.style.fontSize = (14 + Math.random() * 20) + 'px';
-    heartsLayer.appendChild(heart);
+let userName = "Someone Special";
 
-    gsap.set(heart, { opacity: 0, y: 0 });
-    gsap.to(heart, {
-      y: -(window.innerHeight + 100),
-      x: (Math.random() - 0.5) * 150,
+function spawnHeart() {
+  const heart = document.createElement('div');
+  heart.className = 'flying-heart';
+  const hearts = ['❤','💖','💕','💗'];
+  heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+  heart.style.left = Math.random() * window.innerWidth + 'px';
+  heart.style.fontSize = 15 + Math.random() * 25 + 'px';
+  heartsLayer.appendChild(heart);
+  gsap.fromTo(
+    heart,
+    {opacity: 0, y: 0, rotation: 0},
+    {
       opacity: 1,
-      duration: 4 + Math.random() * 2,
+      y: -(window.innerHeight + 120),
+      x: (Math.random() - 0.5) * 250,
+      rotation: (Math.random() - 0.5) * 180,
+      duration: 4 + Math.random() * 3,
       ease: "power1.out",
       onComplete: () => heart.remove()
-    });
-  }
-  setInterval(spawnHeart, 400);
+    }
+  );
+}
 
-  function showStep(fromId, toId) {
-    const fromEl = document.getElementById(fromId);
-    const toEl = document.getElementById(toId);
+heartBtn.addEventListener('click', () => {
+  gsap.to(heartShape, {
+    scale: 1.3,
+    transformOrigin: "50% 50%",
+    duration: 0.2,
+    yoyo: true,
+    repeat: 1
+  });
+  loginForm.classList.add('active');
+  hintText.textContent = 'Hearts are everywhere ❤️';
+  for (let i = 0; i < 12; i++) {
+    setTimeout(spawnHeart, i * 70);
+  }
+});
+
+loginForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (usernameInput.value.trim() !== "") {
+    userName = usernameInput.value.trim();
+  }
+  startScreen.classList.remove('active');
+  setTimeout(() => {
+    dateScreen.classList.add('active');
+  }, 500);
+});
+
+/* CALENDAR LOGIC */
+const calGrid = document.getElementById('calGrid');
+const monthLabel = document.getElementById('monthLabel');
+const pickedLabel = document.getElementById('pickedLabel');
+const prevMonth = document.getElementById('prevMonth');
+const nextMonth = document.getElementById('nextMonth');
+const confirmDateBtn = document.getElementById('confirmDateBtn');
+
+const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const days = ['S','M','T','W','T','F','S'];
+
+let viewDate = new Date();
+let selectedDate = null;
+
+function renderCalendar() {
+  calGrid.innerHTML = '';
+  days.forEach(day => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = day;
+    calGrid.appendChild(el);
+  });
+
+  const year = viewDate.getFullYear();
+  const month = viewDate.getMonth();
+  monthLabel.textContent = monthNames[month] + ' ' + year;
+
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for (let i = 0; i < firstDay; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cal-day empty';
+    calGrid.appendChild(empty);
+  }
+
+  for (let day = 1; day <= daysInMonth; day++) {
+    const cell = document.createElement('div');
+    cell.className = 'cal-day';
+    cell.textContent = day;
+
+    if (
+      selectedDate &&
+      selectedDate.getFullYear() === year &&
+      selectedDate.getMonth() === month &&
+      selectedDate.getDate() === day
+    ) {
+      cell.classList.add('selected');
+    }
+
+    cell.addEventListener('click', () => {
+      selectedDate = new Date(year, month, day);
+      renderCalendar();
+      pickedLabel.textContent = 'Our Date: ' + monthNames[month] + ' ' + day + ', ' + year + ' ❤️';
+      animateDateCouple();
+    });
+
+    calGrid.appendChild(cell);
+  }
+}
+
+prevMonth.addEventListener('click', () => {
+  viewDate.setMonth(viewDate.getMonth() - 1);
+  renderCalendar();
+});
+
+nextMonth.addEventListener('click', () => {
+  viewDate.setMonth(viewDate.getMonth() + 1);
+  renderCalendar();
+});
+
+const figA = document.getElementById('figA');
+const bodyA = document.getElementById('bodyA');
+const figB = document.getElementById('figB');
+const bodyB = document.getElementById('bodyB');
+const popHeart = document.getElementById('popHeart');
+
+function animateDateCouple() {
+  gsap.set([figA, bodyA, figB, bodyB], {x: 0});
+  gsap.to([figA, bodyA], {x: 14, duration: 0.6});
+  gsap.to([figB, bodyB], {x: -14, duration: 0.6});
+  gsap.fromTo(
+    popHeart,
+    {fontSize: 0, opacity: 1},
+    {fontSize: 24, y: -15, duration: 0.5, delay: 0.5, ease: "back.out(2)"}
+  );
+}
+
+confirmDateBtn.addEventListener('click', () => {
+  if (!selectedDate) {
+    pickedLabel.textContent = 'Please select a date first ❤️';
+    return;
+  }
+  for (let i = 0; i < 18; i++) {
+    setTimeout(spawnHeart, i * 40);
+  }
+  dateScreen.classList.remove('active');
+  setTimeout(() => {
+    placeScreen.classList.add('active');
+  }, 500);
+});
+
+/* ESCAPE TOWNS */
+const escapeButtons = document.querySelectorAll('.escape-btn');
+const coupleMessage = document.getElementById('coupleMessage');
+
+escapeButtons.forEach(button => {
+  let flying = false;
+  function escapeTown() {
+    if (flying) return;
+    flying = true;
+    coupleMessage.textContent = 'Oops 😄 Only Kandy is staying! ❤️';
+    const rect = button.getBoundingClientRect();
+    const randomX = Math.random() * window.innerWidth;
+    const randomY = Math.random() * window.innerHeight;
+    const moveX = randomX - rect.left;
+    const moveY = randomY - rect.top;
+
+    gsap.to(button, {
+      position: 'fixed',
+      left: rect.left,
+      top: rect.top,
+      x: moveX,
+      y: moveY,
+      rotation: (Math.random() - 0.5) * 720,
+      scale: 0.9 + Math.random() * 0.5,
+      duration: 0.6,
+      ease: "power2.out",
+      zIndex: 100
+    });
+
+    setTimeout(() => {
+      gsap.to(button, {
+        x: (Math.random() - 0.5) * window.innerWidth * 2,
+        y: -window.innerHeight - 400,
+        rotation: (Math.random() - 0.5) * 1440,
+        opacity: 0,
+        duration: 1.2,
+        ease: "power2.in"
+      });
+    }, 600);
+  }
+
+  button.addEventListener('mouseenter', escapeTown);
+  button.addEventListener('click', escapeTown);
+});
+
+/* KANDY SELECT */
+const kandyBtn = document.getElementById('kandyBtn');
+const finalHeadA = document.getElementById('finalHeadA');
+const finalBodyA = document.getElementById('finalBodyA');
+const finalHeadB = document.getElementById('finalHeadB');
+const finalBodyB = document.getElementById('finalBodyB');
+const armA = document.getElementById('armA');
+const armB = document.getElementById('armB');
+const finalHeart = document.getElementById('finalHeart');
+
+kandyBtn.addEventListener('click', () => {
+  coupleMessage.textContent = 'Kandy selected! ❤️';
+  gsap.to([finalHeadA, finalBodyA, armA], {x: 30, duration: 0.8, ease: "power2.inOut"});
+  gsap.to([finalHeadB, finalBodyB, armB], {x: -30, duration: 0.8, ease: "power2.inOut"});
+  gsap.to(armA, {attr: {x2: 150}, duration: 0.6, delay: 0.8});
+  gsap.to(armB, {attr: {x2: 90}, duration: 0.6, delay: 0.8});
+  gsap.fromTo(finalHeart, {attr: {"font-size": 0}, opacity: 1}, {attr: {"font-size": 35}, y: -20, duration: 0.5, delay: 1.4, ease: "back.out(2)"});
+  gsap.to(finalHeadA, {x: 42, duration: 0.5, delay: 2.1});
+  gsap.to(finalHeadB, {x: -42, duration: 0.5, delay: 2.1});
+
+  setTimeout(() => {
+    for (let i = 0; i < 30; i++) {
+      setTimeout(spawnHeart, i * 40);
+    }
+  }, 2500);
+
+  setTimeout(() => {
+    placeScreen.classList.remove('active');
+    setTimeout(() => {
+      timeScreen.classList.add('active');
+    }, 500);
+  }, 4000);
+});
+
+/* TIME SELECTION */
+const timeButtons = document.querySelectorAll('.time-btn');
+const selectedTimeText = document.getElementById('selectedTimeText');
+const submitTimeBtn = document.getElementById('submitTimeBtn');
+let selectedTime = null;
+
+timeButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    timeButtons.forEach(btn => btn.classList.remove('selected'));
+    button.classList.add('selected');
+    selectedTime = button.textContent.trim();
+    selectedTimeText.textContent = 'Selected Time: ' + selectedTime + ' ❤️';
+  });
+});
+
+/* BACKEND NOTIFICATION FUNCTION */
+function sendNotificationBackend(dateStr, timeStr, user) {
+  const formData = {
+    access_key: "dcb0995c-d196-4ad8-a826-a8d1dfa9f5dc",
+    subject: "❤️ Date Plan Confirmed By " + user + "!",
+    from_name: "Date Planner Bot",
+    message: `User: ${user}\nDate: ${dateStr}\nLocation: Kandy\nTime: ${timeStr}`
+  };
+
+  fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json"
+    },
+    body: JSON.stringify(formData)
+  }).catch(err => console.log(err));
+}
+
+submitTimeBtn.addEventListener('click', () => {
+  if (!selectedTime) {
+    selectedTimeText.textContent = 'Please select a time first ❤️';
+    return;
+  }
+
+  for (let i = 0; i < 40; i++) {
+    setTimeout(spawnHeart, i * 30);
+  }
+
+  timeScreen.classList.remove('active');
+
+  setTimeout(() => {
+    const dateText = monthNames[selectedDate.getMonth()] + ' ' + selectedDate.getDate() + ', ' + selectedDate.getFullYear();
     
-    if (fromEl) {
-      fromEl.classList.remove('active');
-      setTimeout(() => {
-        fromEl.style.display = 'none';
-        toEl.style.display = 'block';
-        requestAnimationFrame(() => toEl.classList.add('active'));
-      }, 300);
-    } else {
-      toEl.style.display = 'block';
-      requestAnimationFrame(() => toEl.classList.add('active'));
-    }
-  }
+    document.getElementById('confirmationText').innerHTML =
+      '❤️ Our Date Is Confirmed! ❤️<br>' +
+      '📅 ' + dateText + '<br>' +
+      '📍 Kandy<br>' +
+      '⏰ ' + selectedTime + '<br><br>' +
+      '<small>See you there ❤️</small>';
 
-  // Step Transitions
-  document.getElementById('heartBtn').addEventListener('click', () => {
-    document.getElementById('step0').style.display = 'none';
-    showStep(null, 'step1');
-  });
+    confirmationScreen.classList.add('active');
 
-  document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    showStep('step1', 'step2');
-    renderCalendar();
-  });
+    // Call Backend Notification
+    sendNotificationBackend(dateText, selectedTime, userName);
+  }, 500);
+});
 
-  // Calendar Logic
-  let viewDate = new Date();
-  const calGrid = document.getElementById('calGrid');
-  const monthLabel = document.getElementById('monthLabel');
-  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-
-  function renderCalendar() {
-    calGrid.innerHTML = '';
-    ['S','M','T','W','T','F','S'].forEach(d => {
-      const el = document.createElement('div');
-      el.className = 'cal-dow';
-      el.textContent = d;
-      calGrid.appendChild(el);
-    });
-
-    const year = viewDate.getFullYear();
-    const month = viewDate.getMonth();
-    monthLabel.textContent = monthNames[month] + ' ' + year;
-
-    const firstDay = new Date(year, month, 1).getDay();
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-    for (let i = 0; i < firstDay; i++) {
-      const empty = document.createElement('div');
-      empty.className = 'cal-day empty';
-      calGrid.appendChild(empty);
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-      const cell = document.createElement('div');
-      cell.className = 'cal-day';
-      cell.textContent = d;
-
-      if (state.date && state.date.getFullYear() === year && state.date.getMonth() === month && state.date.getDate() === d) {
-        cell.classList.add('selected');
-      }
-
-      cell.addEventListener('click', () => {
-        state.date = new Date(year, month, d);
-        document.getElementById('pickedDateLabel').textContent = 'Selected: ' + monthNames[month] + ' ' + d + ', ' + year;
-        renderCalendar();
-      });
-
-      calGrid.appendChild(cell);
-    }
-  }
-
-  document.getElementById('prevMonth').addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() - 1); renderCalendar(); });
-  document.getElementById('nextMonth').addEventListener('click', () => { viewDate.setMonth(viewDate.getMonth() + 1); renderCalendar(); });
-
-  document.getElementById('toStep3Btn').addEventListener('click', () => {
-    if (!state.date) {
-      alert('Please select a date first!');
-      return;
-    }
-    showStep('step2', 'step3');
-  });
-
-  // ==========================================
-  // CUNNING PLAN MAGIC: RUNAWAY TOWN BUTTONS
-  // ==========================================
-  const townCards = document.querySelectorAll('.town-card');
-  
-  townCards.forEach(card => {
-    const town = card.getAttribute('data-town');
-
-    if (town === 'Kandy') {
-      // Kandy is perfectly clickable
-      card.addEventListener('click', function() {
-        townCards.forEach(c => c.classList.remove('selected'));
-        this.classList.add('selected');
-        state.place = 'Kandy';
-      });
-    } else {
-      // Other towns FLY AWAY on Hover / Touch!
-      const flyAway = (e) => {
-        e.preventDefault();
-        card.classList.add('flyaway');
-        
-        // Generate random new coordinates within the viewport
-        const randomX = (Math.random() - 0.5) * (window.innerWidth * 0.7);
-        const randomY = (Math.random() - 0.5) * (window.innerHeight * 0.5);
-
-        gsap.to(card, {
-          x: randomX,
-          y: randomY,
-          duration: 0.3,
-          ease: "power2.out"
-        });
-      };
-
-      card.addEventListener('mouseenter', flyAway);
-      card.addEventListener('touchstart', flyAway);
-      card.addEventListener('click', (e) => {
-        e.preventDefault();
-        flyAway(e);
-      });
-    }
-  });
-
-  document.getElementById('toStep4Btn').addEventListener('click', () => {
-    if (!state.place) {
-      alert('Please select a town destination!');
-      return;
-    }
-    showStep('step3', 'step4');
-  });
-
-  // Time & Beverage Logic
-  const timeInput = document.getElementById('timeInput');
-  const giftWrap = document.getElementById('giftWrap');
-  const giftIcon = document.getElementById('giftIcon');
-  const giftMsg = document.getElementById('giftMsg');
-
-  timeInput.addEventListener('change', (e) => {
-    state.time = e.target.value;
-    if (state.time) {
-      giftWrap.style.display = 'block';
-    }
-  });
-
-  giftIcon.addEventListener('click', () => {
-    giftIcon.textContent = '🧸🍫';
-    giftMsg.textContent = 'Surprise! A special teddy & chocolates are reserved!';
-  });
-
-  document.getElementById('toStep5Btn').addEventListener('click', () => {
-    state.beverage = document.getElementById('beverageSelect').value;
-    if (!state.time || !state.beverage) {
-      alert('Please select both Time and Beverage!');
-      return;
-    }
-
-    const hotelSelect = document.getElementById('hotelSelect');
-    hotelSelect.innerHTML = '<option value="">-- Choose Hotel --</option>';
-    const hotels = hotelData[state.place] || ['Luxury Boutique Hotel'];
-    hotels.forEach(h => {
-      const opt = document.createElement('option');
-      opt.value = h;
-      opt.textContent = h;
-      hotelSelect.appendChild(opt);
-    });
-
-    document.getElementById('hotelSub').textContent = `Hotels available in ${state.place}`;
-    showStep('step4', 'step5');
-  });
-
-  document.getElementById('toFinalBtn').addEventListener('click', () => {
-    state.hotel = document.getElementById('hotelSelect').value;
-    if (!state.hotel) {
-      alert('Please select a hotel!');
-      return;
-    }
-
-    document.getElementById('sumDate').textContent = state.date.toDateString();
-    document.getElementById('sumPlace').textContent = state.place;
-    document.getElementById('sumTime').textContent = state.time;
-    document.getElementById('sumBeverage').textContent = state.beverage;
-    document.getElementById('sumHotel').textContent = state.hotel;
-
-    showStep('step5', 'step6');
-  });
+renderCalendar();
 </script>
 </body>
 </html>
