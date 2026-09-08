@@ -2,13 +2,27 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Our Special Date ❤️</title>
 <!-- GSAP Animation Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <style>
-* {margin: 0;padding: 0;box-sizing: border-box;font-family: "Segoe UI", sans-serif;}
-body {min-height: 100vh;width: 100vw;background: linear-gradient(160deg, #2b0f1a, #170a12);display: flex;justify-content: center;align-items: center;overflow: hidden;position: relative;}
+* {margin: 0;padding: 0;box-sizing: border-box;font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;}
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+}
+body {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+  background: linear-gradient(160deg, #2b0f1a, #170a12);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 15px;
+}
 
 /* FLYING HEARTS */
 .hearts-layer {position: fixed;inset: 0;pointer-events: none;overflow: hidden;z-index: 1;}
@@ -16,13 +30,16 @@ body {min-height: 100vh;width: 100vw;background: linear-gradient(160deg, #2b0f1a
 
 /* COMMON CARD STYLE */
 .screen {
-  width: 360px;
-  max-width: 90vw;
+  width: 92%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
   background: rgba(35, 15, 24, 0.92);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 92, 138, 0.25);
   border-radius: 20px;
-  padding: 28px;
+  padding: 24px 18px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   text-align: center;
   z-index: 5;
@@ -38,8 +55,8 @@ body {min-height: 100vh;width: 100vw;background: linear-gradient(160deg, #2b0f1a
   transform: translateY(0) scale(1);
   pointer-events: auto;
 }
-h2 {color: #ffdce6;font-size: 21px;margin-bottom: 7px;}
-.sub {color: #d68ba0;font-size: 13px;margin-bottom: 20px;line-height: 1.5;}
+h2 {color: #ffdce6;font-size: 20px;margin-bottom: 7px;}
+.sub {color: #d68ba0;font-size: 13px;margin-bottom: 18px;line-height: 1.4;}
 
 /* START SCREEN */
 #startScreen {
@@ -50,9 +67,10 @@ h2 {color: #ffdce6;font-size: 21px;margin-bottom: 7px;}
   background: transparent;
   border: none;
   box-shadow: none;
+  overflow: visible;
 }
 #startScreen.active {display: flex;}
-.heart-wrap {width: 140px;height: 140px;cursor: pointer;}
+.heart-wrap {width: 120px;height: 120px;cursor: pointer;}
 .heart-wrap svg {width: 100%;height: 100%;}
 .heart-shape {fill: #ff2d55;filter: drop-shadow(0 0 15px rgba(255, 45, 85, 0.7));}
 .hint {color: #d68ba0;font-size: 14px;margin-top: 15px;}
@@ -60,11 +78,11 @@ h2 {color: #ffdce6;font-size: 21px;margin-bottom: 7px;}
 /* LOGIN */
 .login-form {
   width: 100%;
-  margin-top: 22px;
-  background: rgba(35, 15, 24, 0.9);
+  margin-top: 20px;
+  background: rgba(35, 15, 24, 0.95);
   border: 1px solid rgba(255, 92, 138, 0.25);
   border-radius: 18px;
-  padding: 25px;
+  padding: 20px 16px;
   opacity: 0;
   transform: translateY(20px);
   pointer-events: none;
@@ -74,12 +92,13 @@ h2 {color: #ffdce6;font-size: 21px;margin-bottom: 7px;}
 .login-form input {
   width: 100%;
   padding: 12px;
-  margin-bottom: 13px;
+  margin-bottom: 12px;
   border-radius: 9px;
   border: 1px solid rgba(255, 92, 138, 0.3);
   background: rgba(255, 255, 255, 0.07);
   color: #ffe4ec;
   outline: none;
+  font-size: 14px;
 }
 .login-form input:focus {border-color: #ff5c8a;}
 
@@ -95,18 +114,19 @@ button {font-family: inherit;}
   font-weight: 600;
   cursor: pointer;
   transition: 0.25s;
+  touch-action: manipulation;
 }
-.main-btn:hover {background: #e01e46;transform: scale(1.02);}
+.main-btn:hover {background: #e01e46;}
 
 /* DATE SCREEN */
 .couple-stage {
-  height: 90px;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
   margin-bottom: 10px;
 }
-.couple-stage svg {height: 80px;}
+.couple-stage svg {height: 70px;}
 
 .cal-header {
   display: flex;
@@ -115,23 +135,26 @@ button {font-family: inherit;}
   margin-bottom: 12px;
 }
 .cal-header button {
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 1px solid rgba(255, 92, 138, 0.3);
   background: transparent;
   color: #ffdce6;
   cursor: pointer;
-  font-size: 17px;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 #monthLabel {color: #ffdce6;font-size: 14px;font-weight: 600;}
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
+  gap: 4px;
   margin-bottom: 15px;
 }
-.cal-dow {color: #a8677c;font-size: 10px;text-align: center;}
+.cal-dow {color: #a8677c;font-size: 11px;text-align: center;padding-bottom: 4px;}
 .cal-day {
   aspect-ratio: 1;
   display: flex;
@@ -142,6 +165,7 @@ button {font-family: inherit;}
   font-size: 12px;
   cursor: pointer;
   position: relative;
+  touch-action: manipulation;
 }
 .cal-day:hover:not(.empty) {background: rgba(255, 92, 138, 0.2);}
 .cal-day.empty {cursor: default;}
@@ -149,80 +173,83 @@ button {font-family: inherit;}
 .picked-label {min-height: 20px;color: #ffb3c6;font-size: 12px;margin-bottom: 12px;}
 
 /* PLACE SCREEN */
-#placeScreen {max-height: 85vh;overflow-y: auto;}
 .places-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+  gap: 10px;
   position: relative;
   margin-top: 15px;
 }
 .place-btn {
-  padding: 13px 8px;
+  padding: 12px 6px;
   border-radius: 12px;
   border: 1px solid rgba(255, 92, 138, 0.3);
   background: rgba(255, 255, 255, 0.07);
   color: #ffe4ec;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
   position: relative;
   transition: 0.2s;
+  touch-action: manipulation;
 }
 .place-btn:hover {background: rgba(255, 92, 138, 0.18);}
 .kandy-btn {
   grid-column: span 2;
   background: #ff2d55;
   border: none;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: bold;
 }
 
 /* COUPLE ANIMATION */
 .final-couple {
-  height: 150px;
+  height: 120px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 8px;
 }
-.final-couple svg {height: 145px;}
-.couple-message {color: #ffb3c6;font-size: 14px;min-height: 22px;margin-bottom: 10px;}
+.final-couple svg {height: 115px;}
+.couple-message {color: #ffb3c6;font-size: 13px;min-height: 20px;margin-bottom: 10px;}
 
 /* TIME SCREEN */
-.big-heart {font-size: 65px;margin-bottom: 12px;}
+.big-heart {font-size: 55px;margin-bottom: 10px;}
 .time-options {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
-  margin-top: 18px;
+  gap: 10px;
+  margin-top: 15px;
 }
 .time-btn {
-  padding: 13px;
+  padding: 12px;
   border-radius: 10px;
   border: 1px solid rgba(255, 92, 138, 0.3);
   background: rgba(255, 255, 255, 0.07);
   color: #ffe4ec;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   transition: 0.25s;
+  touch-action: manipulation;
 }
-.time-btn:hover {transform: scale(1.05);background: rgba(255, 92, 138, 0.2);}
+.time-btn:hover {background: rgba(255, 92, 138, 0.2);}
 .time-btn.selected {background: #ff2d55;border-color: #ff2d55;}
 .selected-time {
-  min-height: 22px;
-  margin-top: 18px;
+  min-height: 20px;
+  margin-top: 15px;
   margin-bottom: 12px;
   color: #ffb3c6;
   font-size: 13px;
 }
 
 /* FINAL CONFIRMATION */
-.confirmation {color: #ffdce6;font-size: 18px;line-height: 1.8;}
+.confirmation {color: #ffdce6;font-size: 16px;line-height: 1.7;}
 .confirmation small {color: #d68ba0;font-size: 13px;}
 
-@media (max-width: 450px) {
-  .screen {width: 90vw;padding: 23px 18px;}
-  .place-btn {font-size: 13px;}
+@media (max-width: 360px) {
+  .screen {padding: 18px 12px;}
+  h2 {font-size: 18px;}
+  .sub {font-size: 12px;}
+  .place-btn, .time-btn {font-size: 12px;padding: 10px 4px;}
 }
 </style>
 </head>
@@ -510,13 +537,13 @@ const coupleMessage = document.getElementById('coupleMessage');
 
 escapeButtons.forEach(button => {
   let flying = false;
-  function escapeTown() {
+  function escapeTown(e) {
     if (flying) return;
     flying = true;
     coupleMessage.textContent = 'Oops 😄 Only Kandy is staying! ❤️';
     const rect = button.getBoundingClientRect();
-    const randomX = Math.random() * window.innerWidth;
-    const randomY = Math.random() * window.innerHeight;
+    const randomX = Math.random() * (window.innerWidth - rect.width);
+    const randomY = Math.random() * (window.innerHeight - rect.height);
     const moveX = randomX - rect.left;
     const moveY = randomY - rect.top;
 
@@ -545,6 +572,7 @@ escapeButtons.forEach(button => {
     }, 600);
   }
 
+  button.addEventListener('touchstart', escapeTown, {passive: true});
   button.addEventListener('mouseenter', escapeTown);
   button.addEventListener('click', escapeTown);
 });
