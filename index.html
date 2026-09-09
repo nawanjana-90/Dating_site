@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover, user-scalable=no">
 <title>Our Special Date ❤️</title>
 <!-- GSAP Animation Library -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -14,21 +14,28 @@
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-html, body {
-  width: 100%;
+html {
   height: 100%;
-  overflow: hidden;
+  height: 100dvh;
 }
 
 body {
+  width: 100%;
   min-height: 100vh;
   min-height: 100dvh; /* Mobile screen bar fixes */
   background: linear-gradient(160deg, #2b0f1a, #170a12);
+
+  /* FLEX: center everything, always fit the viewport */
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 12px;
+  overflow: hidden;
+
+  /* Safe padding for notches / nav bars + breathing room on tiny screens */
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right))
+           max(12px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
 }
 
 /* FLYING HEARTS */
@@ -46,29 +53,36 @@ body {
   font-size: 22px;
 }
 
-/* COMMON CARD STYLE (FLEX LAYOUT) */
+/* COMMON CARD STYLE (FLEX LAYOUT, FILLS AVAILABLE SPACE BUT NEVER OVERFLOWS) */
 .screen {
   width: 100%;
   max-width: 380px;
-  max-height: 90vh;
-  max-height: 90dvh;
+
+  /* Instead of a fixed 90vh, let the card shrink to fit whatever space is
+     actually left on the screen (short phones, landscape, etc). */
+  flex: 0 1 auto;
+  max-height: 100%;
+  max-height: 100dvh;
+
   background: rgba(35, 15, 24, 0.92);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 92, 138, 0.25);
   border-radius: 20px;
-  padding: 20px 16px;
+  padding: clamp(14px, 4vw, 20px) clamp(12px, 4vw, 16px);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
   text-align: center;
   z-index: 5;
-  
+
   /* Flex Centering & Scroll Fix */
   display: none;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   overflow-y: auto;
-  
+  -webkit-overflow-scrolling: touch;
+  min-height: 0; /* required so flex children can actually shrink & scroll */
+
   opacity: 0;
   transform: translateY(20px) scale(0.96);
   pointer-events: none;
@@ -82,8 +96,8 @@ body {
   pointer-events: auto;
 }
 
-h2 { color: #ffdce6; font-size: 19px; margin-bottom: 6px; }
-.sub { color: #d68ba0; font-size: 12px; margin-bottom: 16px; line-height: 1.4; }
+h2 { color: #ffdce6; font-size: clamp(17px, 4.5vw, 19px); margin-bottom: 6px; }
+.sub { color: #d68ba0; font-size: clamp(11px, 3vw, 12px); margin-bottom: 16px; line-height: 1.4; }
 
 /* START SCREEN */
 #startScreen {
@@ -92,9 +106,11 @@ h2 { color: #ffdce6; font-size: 19px; margin-bottom: 6px; }
   box-shadow: none;
   overflow: visible;
   justify-content: center;
+  flex: 0 1 auto;
+  max-height: none;
 }
 
-.heart-wrap { width: 110px; height: 110px; cursor: pointer; flex-shrink: 0; }
+.heart-wrap { width: clamp(80px, 26vw, 110px); height: clamp(80px, 26vw, 110px); cursor: pointer; flex-shrink: 0; }
 .heart-wrap svg { width: 100%; height: 100%; }
 .heart-shape { fill: #ff2d55; filter: drop-shadow(0 0 15px rgba(255, 45, 85, 0.7)); }
 .hint { color: #d68ba0; font-size: 13px; margin-top: 12px; }
@@ -124,9 +140,21 @@ h2 { color: #ffdce6; font-size: 19px; margin-bottom: 6px; }
   background: rgba(255, 255, 255, 0.07);
   color: #ffe4ec;
   outline: none;
-  font-size: 14px;
+  font-size: 16px; /* 16px prevents iOS auto-zoom on focus */
 }
 .login-form input:focus { border-color: #ff5c8a; }
+.login-form input.shake { animation: shakeInput 0.4s; border-color: #ff2d55; }
+@keyframes shakeInput {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+.login-error {
+  color: #ff8ba7;
+  font-size: 12px;
+  min-height: 16px;
+  margin-top: -2px;
+}
 
 button { font-family: inherit; }
 .main-btn {
@@ -141,19 +169,20 @@ button { font-family: inherit; }
   cursor: pointer;
   transition: 0.25s;
   touch-action: manipulation;
+  flex-shrink: 0;
 }
 .main-btn:hover { background: #e01e46; }
 
 /* DATE SCREEN */
 .couple-stage {
-  height: 70px;
+  height: clamp(50px, 12vh, 70px);
   display: flex;
   justify-content: center;
   align-items: flex-end;
   margin-bottom: 8px;
   flex-shrink: 0;
 }
-.couple-stage svg { height: 65px; }
+.couple-stage svg { height: 100%; max-height: 65px; }
 
 .cal-header {
   width: 100%;
@@ -161,6 +190,7 @@ button { font-family: inherit; }
   justify-content: space-between;
   align-items: center;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 .cal-header button {
   width: 30px;
@@ -174,6 +204,7 @@ button { font-family: inherit; }
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 #monthLabel { color: #ffdce6; font-size: 13px; font-weight: 600; }
 .cal-grid {
@@ -182,6 +213,7 @@ button { font-family: inherit; }
   grid-template-columns: repeat(7, 1fr);
   gap: 4px;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 .cal-dow { color: #a8677c; font-size: 11px; text-align: center; }
 .cal-day {
@@ -198,7 +230,7 @@ button { font-family: inherit; }
 .cal-day:hover:not(.empty) { background: rgba(255, 92, 138, 0.2); }
 .cal-day.empty { cursor: default; }
 .cal-day.selected { background: #ff2d55; color: white; font-weight: bold; }
-.picked-label { min-height: 18px; color: #ffb3c6; font-size: 12px; margin-bottom: 10px; }
+.picked-label { min-height: 18px; color: #ffb3c6; font-size: 12px; margin-bottom: 10px; flex-shrink: 0; }
 
 /* PLACE SCREEN */
 .places-container {
@@ -208,6 +240,7 @@ button { font-family: inherit; }
   gap: 8px;
   position: relative;
   margin-top: 10px;
+  flex-shrink: 0;
 }
 .place-btn {
   padding: 10px 4px;
@@ -231,24 +264,25 @@ button { font-family: inherit; }
 
 /* COUPLE ANIMATION */
 .final-couple {
-  height: 100px;
+  height: clamp(70px, 16vh, 100px);
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 6px;
   flex-shrink: 0;
 }
-.final-couple svg { height: 95px; }
-.couple-message { color: #ffb3c6; font-size: 12px; min-height: 18px; margin-bottom: 8px; }
+.final-couple svg { height: 100%; max-height: 95px; }
+.couple-message { color: #ffb3c6; font-size: 12px; min-height: 18px; margin-bottom: 8px; flex-shrink: 0; }
 
 /* TIME SCREEN */
-.big-heart { font-size: 48px; margin-bottom: 8px; }
+.big-heart { font-size: clamp(36px, 10vw, 48px); margin-bottom: 8px; flex-shrink: 0; }
 .time-options {
   width: 100%;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 8px;
   margin-top: 12px;
+  flex-shrink: 0;
 }
 .time-btn {
   padding: 11px;
@@ -269,11 +303,21 @@ button { font-family: inherit; }
   margin-bottom: 10px;
   color: #ffb3c6;
   font-size: 12px;
+  flex-shrink: 0;
 }
 
 /* FINAL CONFIRMATION */
 .confirmation { color: #ffdce6; font-size: 15px; line-height: 1.6; }
 .confirmation small { color: #d68ba0; font-size: 12px; }
+
+/* Extra-short screens (landscape phones, small foldables) */
+@media (max-height: 480px) {
+  .couple-stage, .final-couple { height: 46px; margin-bottom: 4px; }
+  .couple-stage svg, .final-couple svg { max-height: 42px; }
+  h2 { margin-bottom: 3px; }
+  .sub { margin-bottom: 8px; }
+  .cal-grid { gap: 2px; margin-bottom: 6px; }
+}
 </style>
 </head>
 <body>
@@ -294,7 +338,8 @@ button { font-family: inherit; }
     <h2>Find Your Match ❤️</h2>
     <p class="sub">Sign in to continue</p>
     <input type="text" id="usernameInput" placeholder="Username" required>
-    <input type="password" placeholder="Password" required>
+    <input type="password" id="passwordInput" placeholder="Hint: 143" required>
+    <p class="login-error" id="loginError"></p>
     <button class="main-btn" type="submit">Sign In ❤️</button>
   </form>
 </div>
@@ -400,8 +445,11 @@ const hintText = document.getElementById('hintText');
 const loginForm = document.getElementById('loginForm');
 const heartsLayer = document.getElementById('heartsLayer');
 const usernameInput = document.getElementById('usernameInput');
+const passwordInput = document.getElementById('passwordInput');
+const loginError = document.getElementById('loginError');
 
 let userName = "Someone Special";
+const CORRECT_PASSWORD = "i love you";
 
 function spawnHeart() {
   const heart = document.createElement('div');
@@ -443,6 +491,19 @@ heartBtn.addEventListener('click', () => {
 
 loginForm.addEventListener('submit', function(e) {
   e.preventDefault();
+
+  const enteredPassword = passwordInput.value.trim().toLowerCase();
+  if (enteredPassword !== CORRECT_PASSWORD) {
+    loginError.textContent = "That's not it... try the hint ❤️";
+    passwordInput.classList.remove('shake');
+    void passwordInput.offsetWidth; // restart animation
+    passwordInput.classList.add('shake');
+    passwordInput.value = '';
+    passwordInput.focus();
+    return;
+  }
+
+  loginError.textContent = '';
   if (usernameInput.value.trim() !== "") {
     userName = usernameInput.value.trim();
   }
